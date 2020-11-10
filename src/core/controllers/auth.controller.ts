@@ -4,7 +4,11 @@ import { IError } from '../interfaces/error.interface';
 import { IUser } from '../interfaces/user.interface';
 import { User } from '../models/mongoose/user.model';
 import { JoiUserSchema } from '../models/validators/user.validator';
-import { hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 //Register
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -32,5 +36,27 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
 //Login
 export const login = async (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).send('Login Works!')
+    const { value, error } = JoiUserSchema.validate(req.body);
+    if (error) {
+        const validationError: IError = { statusCode: 400, message: StatusCodeExplanation.BAD_REQUEST, details: error.details.map(d => d.message) };
+        return res.status(validationError.statusCode).json(validationError)
+    }
+    //Find the user
+    const user = await User.findOne({ email: value.email })
+    const commonError: IError = { statusCode: 401, message: StatusCodeExplanation.UNAUTHORIZED };
+    if (!user) {
+        return res.status(commonError.statusCode).json(commonError);
+    }
+    //Compere the passwords
+    const isPasswordOk = await compare(value.password, user.password);
+    if (!isPasswordOk) {
+        return res.status(commonError.statusCode).json(commonError);
+    }
+    const userDetails = JSON.parse(JSON.stringify(user));
+    delete userDetails.password;
+    //Generate token
+    const token = sign(userDetails, process.env.TOKEN_SECRET as string, { expiresIn: 3600 });
+
+    res.setHeader('X-Access-Token', token);
+    return res.status(200).json({ message: 'Logged in' });
 }
