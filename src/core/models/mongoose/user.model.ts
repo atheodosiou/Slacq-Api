@@ -8,6 +8,8 @@ export const UserSchema: Schema = new Schema({
     role: { type: String, enum: [Role.ADMIN, Role.USER, Role.CHANNEL_ADMIN], default: Role.USER, required: true },
     displayName: { type: String },
     profilePhotoUrl: { type: String }
+},{
+    timestamps:true
 });
 
 export const User = mongoose.model<IUser>('User', UserSchema);
