@@ -7,9 +7,7 @@ import { User } from '../models/mongoose/user.model';
 import { JoiUserSchema } from '../models/validators/user.validator';
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { Environment } from '../environment';
 
 //Register
 export const register = async (req: ReqExtended, res: Response, next: NextFunction) => {
@@ -56,7 +54,7 @@ export const login = async (req: ReqExtended, res: Response, next: NextFunction)
     const userDetails = JSON.parse(JSON.stringify(user));
     delete userDetails.password;
     //Generate token
-    const token = sign(userDetails, process.env.TOKEN_SECRET as string, { expiresIn: 3600 });
+    const token = sign(userDetails, Environment.TOKEN_SECRET as string, { expiresIn: 3600 });
 
     res.setHeader('X-Access-Token', token);
     return res.status(200).json({ message: 'Logged in' });

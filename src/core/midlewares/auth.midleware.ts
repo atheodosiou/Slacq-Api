@@ -1,20 +1,21 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
-import * as dotenv from 'dotenv';
 import { StatusCodeExplanation } from '../enums/statusCodeExplanation.enum';
 import { IError } from '../interfaces/error.interface';
-dotenv.config();
+import { Environment } from '../environment';
+import { ReqExtended } from '../interfaces/requestExtended';
+import { IUser } from '../interfaces/user.interface';
 
-export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateJWT = (req: ReqExtended, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     let error: IError = { statusCode: 403, message: StatusCodeExplanation.FORBIDEN };
     if (authHeader) {
         const token = authHeader.split(' ')[1];
-        verify(token, (process.env.TOKEN_SECRET as string), (err, user) => {
+        verify(token, (Environment.TOKEN_SECRET as string), (err, user) => {
             if (err) {
                 return res.status(error.statusCode).json(error)
             }
-            (req as any).user=user;
+            req.user = user as IUser;
             next();
         });
     } else {
