@@ -26,6 +26,7 @@
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mongoose": "^5.7.37",
     "@types/node": "^14.14.6",
+    "@types/socket.io": "^2.1.11",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6",
     "ts-node": "^9.0.0",
@@ -37,6 +38,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.13"
+    "mongoose": "^5.10.13",
+    "socket.io": "^3.0.1"
   }
 }

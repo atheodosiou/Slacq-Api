@@ -1,6 +1,7 @@
 {
     "watch": [
-        "src"
+        "src",
+        "@types"
     ],
     "ext": ".ts,.js",
     "ignore": [],

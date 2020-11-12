@@ -1,4 +1,5 @@
-import e, { Request, Response, NextFunction } from 'express';
+import e, { Response, NextFunction } from 'express';
+import { ReqExtended } from '../interfaces/requestExtended';
 import { StatusCodeExplanation } from '../enums/statusCodeExplanation.enum';
 import { IError } from '../interfaces/error.interface';
 import { IUser } from '../interfaces/user.interface';
@@ -11,7 +12,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 //Register
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: ReqExtended, res: Response, next: NextFunction) => {
     const { value, error } = JoiUserSchema.validate(req.body);
     if (error) {
         const validationError: IError = { statusCode: 400, message: StatusCodeExplanation.BAD_REQUEST, details: error.details.map(d => d.message) };
@@ -35,7 +36,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 }
 
 //Login
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: ReqExtended, res: Response, next: NextFunction) => {
     const { value, error } = JoiUserSchema.validate(req.body);
     if (error) {
         const validationError: IError = { statusCode: 400, message: StatusCodeExplanation.BAD_REQUEST, details: error.details.map(d => d.message) };
