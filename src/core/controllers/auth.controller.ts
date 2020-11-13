@@ -57,5 +57,5 @@ export const login = async (req: ReqExtended, res: Response, next: NextFunction)
     const token = sign(userDetails, Environment.TOKEN_SECRET as string, { expiresIn: 3600 });
 
     res.setHeader('X-Access-Token', token);
-    return res.status(200).json({ message: 'Logged in' });
+    return res.status(200).json(userDetails);
 }
