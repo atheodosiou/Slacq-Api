@@ -4,7 +4,7 @@ import { IUser } from '../../interfaces/user.interface';
 
 export const UserSchema: Schema = new Schema({
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
     role: { type: String, enum: [Role.ADMIN, Role.USER, Role.CHANNEL_ADMIN], default: Role.USER, required: true },
     displayName: { type: String },
     profilePhotoUrl: { type: String }

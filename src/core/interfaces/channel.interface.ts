@@ -2,7 +2,7 @@ import { Document } from "mongoose";
 import { IUser } from "./user.interface";
 
 export interface IChannel extends Document {
-    owner: IUser;
+    owner: string;
     name: string
     topic?: string
     users: IUser[];

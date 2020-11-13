@@ -4,7 +4,7 @@ import { MessageSchema } from './message.model';
 import { UserSchema } from './user.model';
 
 export const ChannelSchema: Schema = new Schema({
-    owner: { type: UserSchema, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true, unique: true },
     topic: { type: String, maxlength: 128 },
     users: { type: [UserSchema], maxlength: 50 },
