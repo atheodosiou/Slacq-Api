@@ -9,7 +9,7 @@ import { router as channelRouter } from './channel.routes';
 const baseUrl = '/api/v1';
 
 router.use(`${baseUrl}/auth`, authRouter);
-router.use(`${baseUrl}/user`, authenticateJWT, userRouter);
+router.use(`${baseUrl}/users`, authenticateJWT, userRouter);
 router.use(`${baseUrl}/channels`, authenticateJWT, channelRouter);
 
 export { router };
