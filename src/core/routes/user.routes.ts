@@ -5,5 +5,6 @@ const router = express.Router();
 import * as userController from '../controllers/user.controller';
 
 router.get('/me', userController.me);
+router.get('/join/:id', userController.joinChannel);
 
 export { router };

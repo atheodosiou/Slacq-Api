@@ -5,8 +5,7 @@ import { IError } from '../interfaces/error.interface';
 import { Channel } from '../models/mongoose/channel.model';
 import { JoiChannelSchema } from '../models/validators/channel.validator';
 import { IChannel } from '../interfaces/channel.interface';
-import { IUser } from '../interfaces/user.interface';
-import { User } from '../models/mongoose/user.model';
+import { Schema, Types, isValidObjectId } from 'mongoose';
 export const getAllChannels = async (req: ReqExtended, res: Response, next: NextFunction) => {
     try {
         const channels = await Channel.find();
@@ -38,5 +37,20 @@ export const createChannel = async (req: ReqExtended, res: Response, next: NextF
     } catch (error) {
         let err: IError = { statusCode: 500, message: StatusCodeExplanation.INTERNAL_SERVER_ERROR, details: error?.message };
         return res.status(err.statusCode).json(err)
+    }
+}
+
+export const deleteChannel = async (req: ReqExtended, res: Response, next: NextFunction) => {
+    const channelId = req.params.id;
+    if (!isValidObjectId(channelId)) {
+        let err: IError = { statusCode: 400, message: StatusCodeExplanation.BAD_REQUEST, details: `Id ${channelId} is not valid` };
+        return res.status(err.statusCode).json(err);
+    }
+    try {
+        const deletedChannel = await Channel.findByIdAndDelete(channelId);
+        res.status(200).json({ message: `Channel '${deletedChannel?.name}' was successfully deleted!` });
+    } catch (e) {
+        let err: IError = { statusCode: 500, message: StatusCodeExplanation.INTERNAL_SERVER_ERROR, details: e };
+        return res.status(err.statusCode).json(err);
     }
 }
