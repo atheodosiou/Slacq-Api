@@ -15,5 +15,7 @@ export const Environment = {
     PORT: process.env.PORT,
     TOKEN_SECRET: process.env.TOKEN_SECRET,
     BASE_URL: '/api/v1',
-    CORS_OPTIONS: corsOptions
+    CORS_OPTIONS: corsOptions,
+    avatarImageZise:10000000, // 1 Mb expresed in bytes
+    avatarsPublicFolder:'./public/uploads/avatars'
 }

@@ -6,6 +6,10 @@ import { User } from '../models/mongoose/user.model';
 import { isValidObjectId } from 'mongoose';
 import { Channel } from '../models/mongoose/channel.model';
 import { IUser } from '../interfaces/user.interface';
+import { Environment } from '../environment';
+import { uploadFileMiddleware } from '../midlewares/upload.midleware';
+import * as fs from 'fs';
+import * as mkdirp from 'mkdirp';
 
 export const getAllUsers = async (req: ReqExtended, res: Response, next: NextFunction) => {
     try {
@@ -101,5 +105,42 @@ export const leaveChannel = async (req: ReqExtended, res: Response, next: NextFu
     } catch (e) {
         const error: IError = { statusCode: 500, message: StatusCodeExplanation.INTERNAL_SERVER_ERROR, details: e };
         return res.status(error.statusCode).json(e)
+    }
+}
+
+export const uploadAvatar = async (req: ReqExtended, res: Response, next: NextFunction) => {
+    try {
+        //Find the users who is trying to upload avatar
+        const user = await User.findOne({ _id: req?.user?._id }).select({ password: 0 });
+        if (!user) {
+            const error: IError = { statusCode: 404, message: StatusCodeExplanation.NOT_FOUND, details: 'User not found' };
+            return res.status(error.statusCode).json(error);
+        }
+
+        //folder public/uploads/avatar must exits!
+        if (fs.existsSync(Environment.avatarsPublicFolder) === false) {
+            try {
+                mkdirp.sync(Environment.avatarsPublicFolder);
+            } catch (fsError) {
+                return res.status(500).json(fsError);
+            }
+        }
+        await uploadFileMiddleware(req, res);
+        if (req.file == undefined) {
+            const error: IError = { statusCode: 400, message: StatusCodeExplanation.BAD_REQUEST, details: 'Please upload a file!' };
+            return res.status(error.statusCode).json(error);
+        }
+        const avatarPath = `${req.protocol}://${req.hostname}:${Environment.PORT}/uploads/avatars/${req.file.filename}`;
+        user.profilePhotoUrl = avatarPath;
+        await user.save();
+
+        return res.status(201).json({
+            file: req.file.originalname,
+            path: avatarPath,
+            size: req.file.size
+        });
+    } catch (err) {
+        const error: IError = { statusCode: 500, message: StatusCodeExplanation.INTERNAL_SERVER_ERROR, details: `Could not upload the file! ${err}` };
+        res.status(error.statusCode).json(error);
     }
 }
